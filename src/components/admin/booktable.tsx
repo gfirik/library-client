@@ -1,4 +1,3 @@
-import { supabase } from "@/utils/supabase/client";
 import { Button } from "../ui/button";
 import {
   Table,
@@ -7,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { error } from "console";
 
 const books = [
   {

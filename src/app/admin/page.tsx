@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { Suspense } from "react";
 import BookTable from "@/components/admin/booktable";
+import UploadBookDialog from "@/components/admin/uploadbookdialog";
 
 export default async function PrivatePage() {
   const supabase = createClient();
@@ -12,10 +13,14 @@ export default async function PrivatePage() {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-y-auto">
       <h1 className="text-2xl font-bold mb-4">
         Xush keldingiz {data.user.email} admin janoblari!
       </h1>
+      <div className="flex justify-between items-center mb-4">
+        <div>Dashboard to manage Ilm Library Bot Platform</div>
+        <UploadBookDialog />
+      </div>
       <Suspense fallback={<p>Loading...</p>}>
         <BookTable />
       </Suspense>
