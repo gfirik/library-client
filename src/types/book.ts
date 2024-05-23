@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const bookSchema = z.object({
+export const bookSchema = z.object({
   title: z.string().min(1, "Title is required"),
   author: z.string().min(1, "Author is required"),
   published: z.string().min(4, "Published year is required"),
@@ -13,4 +13,4 @@ const bookSchema = z.object({
     .min(1, "At least one image is required"),
 });
 
-export default bookSchema;
+export type BookFormData = z.infer<typeof bookSchema>;

@@ -1,11 +1,10 @@
 "use client";
 
-import bookSchema from "@/types/book";
+import { bookSchema, BookFormData } from "@/types/book";
 import { supabase } from "@/utils/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import {
   Dialog,
   DialogFooter,
@@ -14,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -22,18 +21,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Textarea } from "../ui/textarea";
-
-type BookFormData = z.infer<typeof bookSchema>;
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import CustomFormField from "@/components/reusables/customformfield";
 
 const UploadBookDialog = () => {
   const router = useRouter();
@@ -53,36 +43,55 @@ const UploadBookDialog = () => {
 
   const onSubmit = async (data: BookFormData) => {
     try {
-      // Upload Images
+      const bucket = "books";
+      const storage = supabase.storage?.from(bucket);
+      console.log(storage);
+      if (!storage) {
+        console.error("Supabase Storage is not available.");
+        return;
+      }
+      //   Upload Images
       const imageUrls = await Promise.all(
         data.images.map(async (file) => {
-          const { data: uploadData, error: uploadError } =
-            await supabase.storage
-              .from("books")
-              .upload(`public/${file.name}`, file);
+          const { data: uploadData, error: uploadError } = await storage.upload(
+            `public/${file.name}`,
+            file,
+            {
+              cacheControl: "3600",
+              upsert: false,
+            }
+          );
           if (uploadError) {
             throw uploadError;
           }
-          return uploadData.path;
+          alert("File uploaded successfully!");
+          return uploadData?.path;
         })
       );
 
+      //   Validate Image Urls
+      const validImageUrls = imageUrls.filter((url) => url !== null);
+
       //   Upload Book Data
-      const { error: insertError } = await supabase.from("books").insert({
-        title: data.title,
-        author: data.author,
-        description: data.description,
-        published: data.published,
-        status: data.status,
-        rented_by: data.rented_by,
-        images: imageUrls,
-      });
+      const { data: bookData, error: insertError } = await supabase
+        .from("books")
+        .insert({
+          title: data.title,
+          author: data.author,
+          description: data.description,
+          published: data.published,
+          status: data.status,
+          rented_by: data.rented_by,
+          images: validImageUrls,
+        });
       if (insertError) {
         throw insertError;
       }
 
       //refresh the page
-      router.refresh();
+      if (bookData) {
+        router.refresh();
+      }
     } catch (error) {
       console.error("Error uploading books", error);
     }
@@ -99,128 +108,24 @@ const UploadBookDialog = () => {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input {...field} id="title" />
-                  </FormControl>
-                  {form.formState.errors.title && (
-                    <FormMessage>
-                      {form.formState.errors.title.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="author"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Author</FormLabel>
-                  <FormControl>
-                    <Input {...field} id="author" />
-                  </FormControl>
-                  {form.formState.errors.author && (
-                    <FormMessage>
-                      {form.formState.errors.author.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
+            <CustomFormField name="title" label="Title" />
+            <CustomFormField name="author" label="Author" />
+            <CustomFormField
               name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} id="description" />
-                  </FormControl>
-                  {form.formState.errors.description && (
-                    <FormMessage>
-                      {form.formState.errors.description.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
+              label="Description"
+              type="text"
             />
-
-            <FormField
-              control={form.control}
-              name="published"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Published Year</FormLabel>
-                  <FormControl>
-                    <Input {...field} id="published" />
-                  </FormControl>
-                  {form.formState.errors.published && (
-                    <FormMessage>
-                      {form.formState.errors.published.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
+            <CustomFormField name="published" label="Published Year" />
+            <CustomFormField
               name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <FormControl>
-                    {/* <select
-                      {...field}
-                      id="status"
-                      className="border border-gray-300 rounded px-2 py-1"
-                    >
-                      <option value="Available">Available</option>
-                      <option value="Unavailable">Unavailable</option>
-                    </select> */}
-                    <Select
-                      {...field}
-                      onValueChange={(value) => field.onChange(value)}
-                      value={field.value}
-                    >
-                      <SelectTrigger id="status">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Available">Available</SelectItem>
-                        <SelectItem value="Unavailable">Unavailable</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  {form.formState.errors.status && (
-                    <FormMessage>
-                      {form.formState.errors.status.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
+              label="Status"
+              type="select"
+              options={[
+                { value: "Available", label: "Available" },
+                { value: "Unavailable", label: "Unavailable" },
+              ]}
             />
-
-            <FormField
-              control={form.control}
-              name="rented_by"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Rented By</FormLabel>
-                  <FormControl>
-                    <Input {...field} id="rented_by" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            <CustomFormField name="rented_by" label="Rented By" />
 
             <FormField
               control={form.control}
@@ -236,8 +141,7 @@ const UploadBookDialog = () => {
                       accept="image/*"
                       onChange={(e) => {
                         if (e.target.files) {
-                          const files = Array.from(e.target.files);
-                          field.onChange(files);
+                          field.onChange(Array.from(e.target.files));
                         }
                       }}
                     />
