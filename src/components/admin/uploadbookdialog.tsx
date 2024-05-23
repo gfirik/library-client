@@ -1,10 +1,9 @@
 "use client";
 
-import { bookSchema, BookFormData } from "@/types/book";
-import { supabase } from "@/utils/supabase/client";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogFooter,
@@ -24,9 +23,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomFormField from "@/components/reusables/customformfield";
+import { bookSchema, BookFormData } from "@/types/book";
+import { uploadBook } from "@/utils/book/uploadbook";
+import { toast } from "sonner";
 
 const UploadBookDialog = () => {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
 
   const form = useForm<BookFormData>({
     resolver: zodResolver(bookSchema),
@@ -43,53 +46,19 @@ const UploadBookDialog = () => {
 
   const onSubmit = async (data: BookFormData) => {
     try {
-      const bucket = "books";
-      const storage = supabase.storage?.from(bucket);
-      console.log(storage);
-      if (!storage) {
-        console.error("Supabase Storage is not available.");
-        return;
-      }
-      //   Upload Images
-      const imageUrls = await Promise.all(
-        data.images.map(async (file) => {
-          const { data: uploadData, error: uploadError } = await storage.upload(
-            `public/${file.name}`,
-            file,
-            {
-              cacheControl: "3600",
-              upsert: false,
-            }
-          );
-          if (uploadError) {
-            throw uploadError;
-          }
-          alert("File uploaded successfully!");
-          return uploadData?.path;
-        })
-      );
+      const success = await uploadBook(data);
+      if (success) {
+        setOpen(false);
 
-      //   Validate Image Urls
-      const validImageUrls = imageUrls.filter((url) => url !== null);
-
-      //   Upload Book Data
-      const { data: bookData, error: insertError } = await supabase
-        .from("books")
-        .insert({
-          title: data.title,
-          author: data.author,
-          description: data.description,
-          published: data.published,
-          status: data.status,
-          rented_by: data.rented_by,
-          images: validImageUrls,
-        });
-      if (insertError) {
-        throw insertError;
-      }
-
-      //refresh the page
-      if (bookData) {
+        form.reset();
+        // toast("Book data uploaded successfully!", {
+        //   description: `${data.title}, ${data.author}`,
+        //   action: {
+        //     label: "Go'zal!",
+        //     onClick: () => {
+        //     },
+        //   },
+        // });
         router.refresh();
       }
     } catch (error) {
@@ -98,7 +67,7 @@ const UploadBookDialog = () => {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Upload New Book</Button>
       </DialogTrigger>
