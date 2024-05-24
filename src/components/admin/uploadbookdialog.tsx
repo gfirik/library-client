@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import CustomFormField from "@/components/reusables/customformfield";
 import { useToast } from "@/components/ui/use-toast";
+import { uploadBook } from "@/utils/book/uploadbook";
 
 interface UploadBookDialogProps {
   fetchBooks: () => void;
@@ -48,16 +49,23 @@ const UploadBookDialog: React.FC<UploadBookDialogProps> = ({ fetchBooks }) => {
 
   const onSubmit = async (data: BookFormData) => {
     try {
-      const { error } = await supabase.from("books").insert([data]);
-      if (error) throw error;
-      setOpen(false);
-      form.reset();
-      fetchBooks();
-
-      toast({
-        title: "New book uploaded!",
-        description: `${data.title} by ${data.author} has been added.`,
-      });
+      const success = await uploadBook(data);
+      if (success) {
+        setOpen(false);
+        form.reset();
+        fetchBooks();
+        toast({
+          title: "New book uploaded!",
+          description: `${data.title} by ${data.author} has been added.`,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error uploading book",
+          description:
+            "An error occurred while uploading the book. Please try again.",
+        });
+      }
     } catch (error) {
       console.error("Error uploading books", error);
     }
