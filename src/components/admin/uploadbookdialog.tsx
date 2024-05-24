@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BookFormData, bookSchema } from "@/types/book";
+import { supabase } from "@/utils/supabase/client";
 import {
   Dialog,
   DialogFooter,
@@ -23,14 +24,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomFormField from "@/components/reusables/customformfield";
-import { bookSchema, BookFormData } from "@/types/book";
-import { uploadBook } from "@/utils/book/uploadbook";
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/use-toast";
 
-const UploadBookDialog = () => {
-  const router = useRouter();
+interface UploadBookDialogProps {
+  onNewBook: () => void;
+}
+
+const UploadBookDialog = ({ onNewBook }: UploadBookDialogProps) => {
   const [open, setOpen] = useState(false);
-
   const form = useForm<BookFormData>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
@@ -43,24 +44,20 @@ const UploadBookDialog = () => {
       images: [],
     },
   });
+  const { toast } = useToast();
 
   const onSubmit = async (data: BookFormData) => {
     try {
-      const success = await uploadBook(data);
-      if (success) {
-        setOpen(false);
+      const { error } = await supabase.from("books").insert([data]);
+      if (error) throw error;
+      setOpen(false);
+      form.reset();
+      onNewBook();
 
-        form.reset();
-        // toast("Book data uploaded successfully!", {
-        //   description: `${data.title}, ${data.author}`,
-        //   action: {
-        //     label: "Go'zal!",
-        //     onClick: () => {
-        //     },
-        //   },
-        // });
-        router.refresh();
-      }
+      toast({
+        title: "Book uploaded",
+        description: `${data.title} by ${data.author} has been added.`,
+      });
     } catch (error) {
       console.error("Error uploading books", error);
     }

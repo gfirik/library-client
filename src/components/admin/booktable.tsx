@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "../ui/button";
 import {
   Table,
@@ -6,45 +8,17 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { BookFormData } from "@/types/book";
 
-const books = [
-  {
-    id: 1,
-    title: "Book 1",
-    author: "Author 1",
-    published: "2020",
-    status: "Available",
-    remted_ny: "",
-    images: [
-      "somelink or file name in the supabase",
-      "somelink or file name in the supabase",
-      "somelink or file name in the supabase",
-    ],
-  },
-  {
-    id: 2,
-    title: "Book 2",
-    author: "Author 2",
-    published: "2021",
-    status: "Rented",
-    rented_ny: "3435353535",
-    images: [
-      "somelink or file name in the supabase",
-      "somelink or file name in the supabase",
-      "somelink or file name in the supabase",
-    ],
-  },
-];
+interface BookTableProps {
+  books: BookFormData[];
+  loading: boolean;
+}
 
-const BookTable = () => {
-  // const fetchBooks = async () => {
-  //   const { data, error } = await supabase.from("books").select("*");
-  //   if (error) {
-  //     console.error(error.message);
-  //     return [];
-  //   }
-  //   return data;
-  // };
+const BookTable = ({ books, loading }: BookTableProps) => {
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -69,7 +43,7 @@ const BookTable = () => {
               <TableCell>{book.author}</TableCell>
               <TableCell>{book.published}</TableCell>
               <TableCell>{book.status}</TableCell>
-              <TableCell>{book.rented_ny}</TableCell>
+              <TableCell>{book.rented_by}</TableCell>
               <TableCell>{book.images.length}</TableCell>
               <TableCell>
                 <Button variant="outline" className="mr-2">
