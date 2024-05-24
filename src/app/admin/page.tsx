@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import dynamic from "next/dynamic";
 
-// Dynamically import the client-side component
 const PrivatePageClient = dynamic(() => import("./AdminClientPage"), {
   ssr: false,
 });
