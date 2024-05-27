@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
-const PrivatePageClient = dynamic(() => import("./AdminClientPage"), {
+const AdminClientPage = dynamic(() => import("./adminclient"), {
   ssr: false,
 });
 
@@ -14,12 +15,11 @@ export default async function PrivatePage() {
     redirect("/admin/login");
   }
 
+  const email = data?.user.email || "";
+
   return (
-    <div className="p-4 overflow-y-auto">
-      <h1 className="text-2xl font-bold mb-4">
-        Xush keldingiz {data.user.email} admin janoblari!
-      </h1>
-      <PrivatePageClient />
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <AdminClientPage email={email} />
+    </Suspense>
   );
 }

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BookFormData, bookSchema } from "@/types/book";
-import { supabase } from "@/utils/supabase/client";
 import {
   Dialog,
   DialogFooter,
@@ -74,7 +73,7 @@ const UploadBookDialog: React.FC<UploadBookDialogProps> = ({ fetchBooks }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Upload New Book</Button>
+        <Button>New Book</Button>
       </DialogTrigger>
       <DialogContent className="max-h-screen overflow-y-auto">
         <DialogHeader>
