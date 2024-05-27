@@ -91,7 +91,7 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
               type="select"
               options={[
                 { value: "Available", label: "Available" },
-                { value: "Unavailable", label: "Unavailable" },
+                { value: "Rented", label: "Rented" },
               ]}
             />
             <CustomFormField name="rented_by" label="Rented By" />

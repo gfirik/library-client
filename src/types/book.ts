@@ -6,7 +6,7 @@ export const bookSchema = z.object({
   author: z.string().min(1, "Author is required"),
   published: z.string().min(4, "Published year is required"),
   description: z.string().min(10, "Description is required"),
-  status: z.enum(["Available", "Unavailable"]),
+  status: z.enum(["Available", "Rented", "Pending"]),
   rented_by: z.string().optional(),
   images: z
     .array(z.any())
