@@ -17,9 +17,5 @@ export default async function PrivatePage() {
 
   const email = data?.user.email || "";
 
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <AdminClientPage email={email} />
-    </Suspense>
-  );
+  return <AdminClientPage email={email} />;
 }

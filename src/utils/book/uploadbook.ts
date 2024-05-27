@@ -44,17 +44,15 @@ export const uploadBook = async (data: BookFormData): Promise<boolean> => {
     const validImageUrls = imageUrls.filter((url) => url !== null);
 
     // Upload Book Data
-    const { data: bookData, error: insertError } = await supabase
-      .from("books")
-      .insert({
-        title: data.title,
-        author: data.author,
-        description: data.description,
-        published: data.published,
-        status: data.status,
-        rented_by: data.rented_by,
-        images: validImageUrls,
-      });
+    const { error: insertError } = await supabase.from("books").insert({
+      title: data.title,
+      author: data.author,
+      description: data.description,
+      published: data.published,
+      status: data.status,
+      rented_by: data.rented_by,
+      images: validImageUrls,
+    });
     if (insertError) {
       throw insertError;
     }

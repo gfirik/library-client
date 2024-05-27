@@ -26,11 +26,7 @@ import CustomFormField from "@/components/reusables/customformfield";
 import { useToast } from "@/components/ui/use-toast";
 import { uploadBook } from "@/utils/book/uploadbook";
 
-interface UploadBookDialogProps {
-  fetchBooks: () => void;
-}
-
-const UploadBookDialog: React.FC<UploadBookDialogProps> = ({ fetchBooks }) => {
+const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
   const [open, setOpen] = useState(false);
   const form = useForm<BookFormData>({
     resolver: zodResolver(bookSchema),
@@ -52,7 +48,7 @@ const UploadBookDialog: React.FC<UploadBookDialogProps> = ({ fetchBooks }) => {
       if (success) {
         setOpen(false);
         form.reset();
-        fetchBooks();
+        mutate();
         toast({
           title: "New book uploaded!",
           description: `${data.title} by ${data.author} has been added.`,

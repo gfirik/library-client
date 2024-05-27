@@ -12,13 +12,14 @@ import { BookFormData } from "@/types/book";
 
 interface BookTableProps {
   books: BookFormData[];
-  loading: boolean;
+  onDelete: (bookId: number, images: any[]) => void;
 }
 
-const BookTable = ({ books, loading }: BookTableProps) => {
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+const BookTable = ({ books, onDelete }: BookTableProps) => {
+  const handleDeleteClick = (bookId: number, images: any[]) => {
+    console.log(`handleDeleteClick called for book ID: ${bookId}`);
+    onDelete(bookId, images);
+  };
 
   return (
     <div>
@@ -49,7 +50,14 @@ const BookTable = ({ books, loading }: BookTableProps) => {
                 <Button variant="outline" className="mr-2">
                   Edit
                 </Button>
-                <Button variant="outline" color="red">
+                <Button
+                  variant="outline"
+                  color="red"
+                  onClick={() =>
+                    book.id !== undefined &&
+                    handleDeleteClick(book.id, book.images)
+                  }
+                >
                   Delete
                 </Button>
               </TableCell>

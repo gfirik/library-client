@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { supabase } from "@/utils/supabase/client";
+import { Button } from "@/components/ui/button";
 
 const Sidebar = ({
   email,
@@ -18,7 +19,7 @@ const Sidebar = ({
   };
 
   return (
-    <div className="w-64 bg-gray-800 text-white flex flex-col justify-between">
+    <div className="w-64 bg-zinc-950 text-white flex flex-col justify-between">
       <div>
         <div className="p-4 text-lg font-bold">Admin Dashboard</div>
         <nav className="p-4">
@@ -52,12 +53,12 @@ const Sidebar = ({
       </div>
       <div className="p-4">
         <div className="mb-4 text-gray-400">{email}</div>
-        <button
+        <Button
           onClick={handleLogout}
-          className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+          className="w-full bg-zinc-800 rounded hover:bg-red-600"
         >
           Log Out
-        </button>
+        </Button>
       </div>
     </div>
   );
