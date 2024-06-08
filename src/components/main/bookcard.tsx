@@ -17,7 +17,7 @@ const BookCard: FC<BookCardProps> = ({ book }) => {
   const { title, author, status, images } = book;
 
   return (
-    <Card className="flex flex-col items-center p-4">
+    <Card className="flex flex-col items-center p-4 shadow-2xl">
       <CardHeader className="w-full flex justify-center">
         {images && images.length > 0 && (
           <Image
@@ -32,7 +32,7 @@ const BookCard: FC<BookCardProps> = ({ book }) => {
       <CardContent className="w-full text-center">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{author}</CardDescription>
-        <p>Status: {status}</p>
+        <p>{status}</p>
       </CardContent>
     </Card>
   );

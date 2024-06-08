@@ -1,11 +1,7 @@
-"use client";
-
-import useSWR from "swr";
-import BookCard from "./bookcard";
 import { supabase } from "@/utils/supabase/client";
 import { BookFormData } from "@/types/book";
 
-const fetchBooks = async () => {
+export const fetchBooks = async (): Promise<BookFormData[]> => {
   const { data, error } = await supabase.from("books").select("*");
   if (error) {
     throw new Error(error.message);
@@ -24,26 +20,3 @@ const fetchBooks = async () => {
 
   return booksWithImageUrls;
 };
-
-const MainFeed = () => {
-  const {
-    data: books,
-    error,
-    isLoading,
-  } = useSWR("books", fetchBooks, {
-    revalidateOnMount: true,
-  });
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading books</div>;
-
-  return (
-    <div className="grid grid-cols-2 gap-4 p-4">
-      {books?.map((book: BookFormData) => (
-        <BookCard key={book.id} book={book} />
-      ))}
-    </div>
-  );
-};
-
-export default MainFeed;
