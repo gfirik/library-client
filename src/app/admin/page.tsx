@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
 
 const AdminClientPage = dynamic(() => import("./adminclient"), {
   ssr: false,

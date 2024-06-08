@@ -1,3 +1,3 @@
-export default function MainDashboard() {
-  return <div>Main</div>;
+export default function UsersPage() {
+  return <div>userspage</div>;
 }
