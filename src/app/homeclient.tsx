@@ -12,7 +12,6 @@ interface HomeClientProps {
 const HomeClient: React.FC<HomeClientProps> = ({ books: initialBooks }) => {
   const { isTelegramWebApp, username } = useTelegram();
   const [showAvailable, setShowAvailable] = useState(true);
-
   const recommendedBooks = initialBooks.slice(
     0,
     Math.min(5, initialBooks.length)
@@ -25,7 +24,9 @@ const HomeClient: React.FC<HomeClientProps> = ({ books: initialBooks }) => {
     <>
       <div className="text-lg mb-4">
         {isTelegramWebApp
-          ? `Hello, ${username}!`
+          ? username
+            ? `Hello, ${username}!`
+            : "Use the app via Telegram to access full features."
           : "Use the app via Telegram to access full features."}
       </div>
 
@@ -40,22 +41,22 @@ const HomeClient: React.FC<HomeClientProps> = ({ books: initialBooks }) => {
         </div>
       )}
 
-      <div className="mb-4">
+      <div className="mb-4 w-full">
         <button
           className={`px-4 py-2 ${
-            showAvailable ? "bg-blue-500 text-white" : "bg-gray-200"
+            showAvailable ? "bg-zinc-600 text-white" : "bg-gray-200"
           }`}
           onClick={() => setShowAvailable(true)}
         >
-          Available Books
+          #available
         </button>
         <button
           className={`px-4 py-2 ${
-            !showAvailable ? "bg-blue-500 text-white" : "bg-gray-200"
+            !showAvailable ? "bg-zinc-600 text-white" : "bg-gray-200"
           }`}
           onClick={() => setShowAvailable(false)}
         >
-          All Books
+          #all
         </button>
       </div>
 

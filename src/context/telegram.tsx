@@ -23,7 +23,7 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
       if (tg) {
         setIsTelegramWebApp(true);
         tg.ready();
-        setUsername(tg.initDataUnsafe.user?.username || "User");
+        setUsername(tg.initDataUnsafe.user?.username);
       }
     };
 

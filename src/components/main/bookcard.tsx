@@ -25,6 +25,7 @@ const BookCard: FC<BookCardProps> = ({ book }) => {
             alt={title}
             width={150}
             height={200}
+            priority
             className="object-cover"
           />
         )}

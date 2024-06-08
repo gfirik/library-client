@@ -7,7 +7,6 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col items-center p-4">
-      <h1 className="text-2xl font-bold mb-4">Ilm Library Books</h1>
       <HomeClient books={books} />
     </main>
   );
