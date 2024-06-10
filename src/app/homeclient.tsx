@@ -1,24 +1,40 @@
 "use client";
 
 import { useTelegram } from "@/context/telegram";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BookCard from "@/components/main/bookcard";
 import { BookFormData } from "@/types/book";
+import useSWR from "swr";
+import { fetchBooks } from "@/utils/book/fetchbooks";
+import { getRandomElements } from "@/utils/book/random";
 
 interface HomeClientProps {
-  books: BookFormData[];
+  initialBooks: BookFormData[];
 }
 
-const HomeClient: React.FC<HomeClientProps> = ({ books: initialBooks }) => {
+const fetcher = () => fetchBooks();
+
+const HomeClient: React.FC<HomeClientProps> = ({ initialBooks }) => {
   const { isTelegramWebApp, username } = useTelegram();
   const [showAvailable, setShowAvailable] = useState(true);
-  const recommendedBooks = initialBooks.slice(
-    0,
-    Math.min(5, initialBooks.length)
-  );
+  const [randomBooks, setRandomBooks] = useState<BookFormData[]>([]);
+
+  const { data: books, error } = useSWR("books", fetcher, {
+    fallbackData: initialBooks,
+  });
+
+  useEffect(() => {
+    if (books) {
+      setRandomBooks(getRandomElements(books, 5));
+    }
+  }, [books]);
+
+  if (error) return <div>Failed to load books.</div>;
+  if (!books) return <div>Loading...</div>;
+
   const filteredBooks = showAvailable
-    ? initialBooks.filter((book) => book.status === "Available")
-    : initialBooks;
+    ? books.filter((book) => book.status === "Available")
+    : books;
 
   return (
     <>
@@ -30,12 +46,12 @@ const HomeClient: React.FC<HomeClientProps> = ({ books: initialBooks }) => {
           : "Use the app via Telegram to access full features."}
       </div>
 
-      {recommendedBooks && recommendedBooks.length > 0 && (
+      {randomBooks && randomBooks.length > 0 && (
         <div className="mb-8 w-full">
           <h2 className="text-xl font-semibold mb-2">Recommended Books</h2>
           <div className="flex overflow-x-auto space-x-4">
-            {recommendedBooks.map((book: BookFormData) => (
-              <BookCard key={book.id} book={book} />
+            {randomBooks.map((book: BookFormData) => (
+              <BookCard key={book.id} book={book} isRecommended />
             ))}
           </div>
         </div>
@@ -60,7 +76,7 @@ const HomeClient: React.FC<HomeClientProps> = ({ books: initialBooks }) => {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="flex flex-col gap-4">
         {filteredBooks.map((book: BookFormData) => (
           <BookCard key={book.id} book={book} />
         ))}

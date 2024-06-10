@@ -11,29 +11,59 @@ import Image from "next/image";
 
 interface BookCardProps {
   book: BookFormData;
+  isRecommended?: boolean;
 }
 
-const BookCard: FC<BookCardProps> = ({ book }) => {
-  const { title, author, status, images } = book;
+const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
+  const { title, author, status, images, id } = book;
+
+  if (isRecommended) {
+    return (
+      <Card className="flex flex-col items-center p-4 shadow-sm w-full min-w-[200px] mb-3">
+        <CardHeader className="w-full flex justify-center mb-4">
+          {images && images.length > 0 && (
+            <div className="relative w-32 h-48">
+              <Image
+                src={images[0]}
+                alt={title}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                priority
+                className="object-cover rounded-lg"
+              />
+            </div>
+          )}
+        </CardHeader>
+        <CardContent className="w-full text-center">
+          <CardTitle className="text-base">{title}</CardTitle>
+          <CardDescription className="text-sm text-gray-600">
+            {author}
+          </CardDescription>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="flex flex-col items-center p-4 shadow-2xl">
-      <CardHeader className="w-full flex justify-center">
-        {images && images.length > 0 && (
+    <Card className="flex items-center p-4 shadow-sm w-full">
+      {images && images.length > 0 && (
+        <div className="relative w-32 h-48 mr-4">
           <Image
             src={images[0]}
             alt={title}
-            width={150}
-            height={200}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
-            className="object-cover"
+            className="object-cover rounded-sm"
           />
-        )}
-      </CardHeader>
-      <CardContent className="w-full text-center">
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{author}</CardDescription>
-        <p>{status}</p>
+        </div>
+      )}
+      <CardContent className="w-full">
+        <CardTitle className="text-lg">{title}</CardTitle>
+        <CardDescription className="text-sm text-gray-600">
+          {author}
+        </CardDescription>
+        <p className="text-sm">{status}</p>
       </CardContent>
     </Card>
   );

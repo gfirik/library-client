@@ -7,7 +7,7 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col items-center p-4">
-      <HomeClient books={books} />
+      <HomeClient initialBooks={books} />
     </main>
   );
 }
