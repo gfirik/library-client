@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BookFormData, bookSchema } from "@/types/book";
+import { BookFormData, bookSchema, categories } from "@/types/book";
 import {
   Dialog,
   DialogFooter,
@@ -27,16 +27,6 @@ import CustomFormField from "@/components/reusables/customformfield";
 import { useToast } from "@/components/ui/use-toast";
 import { uploadBook } from "@/utils/book/uploadbook";
 import { capitalizeFirstLetter } from "../../../utils/functions/capitalize";
-
-const categories = [
-  "boshqa",
-  "tarix",
-  "islom",
-  "siyosat",
-  "biznes",
-  "rivojlanish",
-  "badiiy",
-];
 
 const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
   const [open, setOpen] = useState(false);

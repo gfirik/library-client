@@ -15,7 +15,7 @@ interface BookCardProps {
 }
 
 const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
-  const { title, author, status, images, id } = book;
+  const { title, author, status, images, categories } = book;
 
   if (isRecommended) {
     return (
@@ -64,6 +64,11 @@ const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
           {author}
         </CardDescription>
         <p className="text-sm">{status}</p>
+        {categories && (
+          <div className="text-sm text-gray-600">
+            Categories: {categories.join(", ")}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -16,3 +16,13 @@ export const bookSchema = z.object({
 });
 
 export type BookFormData = z.infer<typeof bookSchema>;
+
+export const categories = [
+  "badiiy",
+  "tarix",
+  "islom",
+  "siyosat",
+  "biznes",
+  "rivojlanish",
+  "boshqa",
+];
