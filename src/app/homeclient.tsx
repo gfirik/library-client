@@ -6,7 +6,7 @@ import BookCard from "@/components/main/bookcard";
 import { BookFormData } from "@/types/book";
 import useSWR from "swr";
 import { fetchBooks } from "@/utils/book/fetchbooks";
-import { getRandomElements } from "@/utils/book/random";
+import { getRandomElements } from "@/utils/functions/random";
 
 interface HomeClientProps {
   initialBooks: BookFormData[];

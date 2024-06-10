@@ -22,9 +22,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import CustomFormField from "@/components/reusables/customformfield";
 import { useToast } from "@/components/ui/use-toast";
 import { uploadBook } from "@/utils/book/uploadbook";
+import { capitalizeFirstLetter } from "../../../utils/functions/capitalize";
+
+const categories = [
+  "boshqa",
+  "tarix",
+  "islom",
+  "siyosat",
+  "biznes",
+  "rivojlanish",
+  "badiiy",
+];
 
 const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
   const [open, setOpen] = useState(false);
@@ -38,6 +50,7 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
       status: "Available",
       rented_by: "",
       images: [],
+      categories: [],
     },
   });
   const { toast } = useToast();
@@ -85,6 +98,58 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
               type="text"
             />
             <CustomFormField name="published" label="Published Year" />
+
+            <FormField
+              control={form.control}
+              name="categories"
+              render={() => (
+                <FormItem>
+                  <div className="mb-4">
+                    <FormLabel>Categories</FormLabel>
+                    <div className="flex flex-wrap gap-2">
+                      {categories.map((category) => (
+                        <FormField
+                          key={category}
+                          control={form.control}
+                          name="categories"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={category}
+                                className="flex flex-row items-start space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(category)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([
+                                            ...field.value,
+                                            category,
+                                          ])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== category
+                                            )
+                                          );
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel>
+                                  {capitalizeFirstLetter(category)}
+                                </FormLabel>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <CustomFormField
               name="status"
               label="Status"

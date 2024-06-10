@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BookFormData } from "@/types/book";
+import { Badge } from "@/components/ui/badge";
 
 interface BookTableProps {
   books: BookFormData[];
@@ -78,9 +79,10 @@ const BookTable = ({ books, onDelete }: BookTableProps) => {
             <TableCell>Author</TableCell>
             <TableCell>Published</TableCell>
             <TableCell>Status</TableCell>
+            <TableCell>Categories</TableCell>
             <TableCell>Rented by</TableCell>
             <TableCell>Images</TableCell>
-            <TableCell>Actions</TableCell>
+            <TableCell>Action</TableCell>
           </TableRow>
         </TableHeader>
 
@@ -99,6 +101,13 @@ const BookTable = ({ books, onDelete }: BookTableProps) => {
               <TableCell>{book.title}</TableCell>
               <TableCell>{book.author}</TableCell>
               <TableCell>{book.published}</TableCell>
+              <TableCell>
+                {book.categories?.map((category, index) => (
+                  <Badge key={index} className="m-1">
+                    {category}
+                  </Badge>
+                ))}
+              </TableCell>
               <TableCell>
                 <Select
                   value={
@@ -122,12 +131,8 @@ const BookTable = ({ books, onDelete }: BookTableProps) => {
               <TableCell>{book.rented_by}</TableCell>
               <TableCell>{book.images.length}</TableCell>
               <TableCell>
-                <Button variant="outline" className="mr-2">
-                  Edit
-                </Button>
                 <Button
                   variant="outline"
-                  color="red"
                   onClick={() =>
                     book.id !== undefined &&
                     handleDeleteClick(book.id, book.images)

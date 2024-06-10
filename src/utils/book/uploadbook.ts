@@ -49,6 +49,7 @@ export const uploadBook = async (data: BookFormData): Promise<boolean> => {
       author: data.author,
       description: data.description,
       published: data.published,
+      categories: data.categories,
       status: data.status,
       rented_by: data.rented_by,
       images: validImageUrls,
