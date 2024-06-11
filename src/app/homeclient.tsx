@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useTelegram } from "@/context/telegram";
 import useBooks from "@/hooks/useBook";
 import { BookFormData, categories } from "@/types/book";
+import UserGreeting from "@/components/main/usergreeting";
 import CategoryButtons from "@/components/main/categorybuttons";
 import AvailabilityToggle from "@/components/main/availabilitytogle";
 import BookList from "@/components/main/booklist";
@@ -14,7 +14,6 @@ interface HomeClientProps {
 }
 
 const HomeClient: React.FC<HomeClientProps> = ({ initialBooks }) => {
-  const { isTelegramWebApp, username } = useTelegram();
   const {
     books,
     randomBooks,
@@ -31,13 +30,7 @@ const HomeClient: React.FC<HomeClientProps> = ({ initialBooks }) => {
 
   return (
     <>
-      <div className="text-lg mb-4">
-        {isTelegramWebApp
-          ? username
-            ? `Hello, ${username}!`
-            : "Use the app via Telegram to access full features."
-          : "Use the app via Telegram to access full features."}
-      </div>
+      <UserGreeting />
 
       {randomBooks.length > 0 && <RecommendedBooks books={randomBooks} />}
 

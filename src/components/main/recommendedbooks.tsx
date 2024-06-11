@@ -8,7 +8,7 @@ interface RecommendedBooksProps {
 
 const RecommendedBooks: React.FC<RecommendedBooksProps> = ({ books }) => (
   <div className="mb-8 w-full">
-    <h2 className="text-xl font-semibold mb-2">Recommended Books</h2>
+    <h2 className="text-xl font-semibold mb-2">Tavsiyalar</h2>
     <div className="flex overflow-x-auto space-x-4">
       {books.map((book: BookFormData) => (
         <BookCard key={book.id} book={book} isRecommended />
