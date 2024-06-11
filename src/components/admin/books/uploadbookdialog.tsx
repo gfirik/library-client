@@ -47,7 +47,7 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
 
   const onSubmit = async (data: BookFormData) => {
     try {
-      const success = await uploadBook(data);
+      const { success, error } = await uploadBook(data);
       if (success) {
         setOpen(false);
         form.reset();
@@ -57,15 +57,25 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
           description: `${data.title} by ${data.author} has been added.`,
         });
       } else {
+        let errorMessage =
+          "An error occurred while uploading the book. Please try again.";
+        if (error === "Duplicate image file.") {
+          errorMessage =
+            "The image file already exists. Please use a different image or rename the file.";
+        }
         toast({
           variant: "destructive",
           title: "Error uploading book",
-          description:
-            "An error occurred while uploading the book. Please try again.",
+          description: errorMessage,
         });
       }
     } catch (error) {
-      console.error("Error uploading books", error);
+      console.error("Error uploading book", error);
+      toast({
+        variant: "destructive",
+        title: "Error uploading book",
+        description: "An unexpected error occurred. Please try again.",
+      });
     }
   };
 

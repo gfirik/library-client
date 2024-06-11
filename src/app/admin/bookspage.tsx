@@ -4,6 +4,7 @@ import useSWR from "swr";
 import BookTable from "@/components/admin/books/booktable";
 import UploadBookDialog from "@/components/admin/books/uploadbookdialog";
 import { supabase } from "@/utils/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const fetchBooks = async () => {
   const { data, error } = await supabase.from("books").select("*");
@@ -60,11 +61,16 @@ const BooksPage = () => {
     mutate,
   } = useSWR("books", fetchBooks, { revalidateOnMount: true });
 
+  const { toast } = useToast();
+
   const handleDeleteBook = async (bookId: number, images: string[]) => {
     try {
       console.log(`Deleting book with ID: ${bookId}`);
       await deleteBook(bookId, images);
       console.log(`Book with ID: ${bookId} deleted`);
+      // toast({
+
+      // })
       mutate();
     } catch (error) {
       console.error("Error deleting book:", error);

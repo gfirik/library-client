@@ -1,42 +1,74 @@
 import { supabase } from "@/utils/supabase/client";
 import { BookFormData } from "@/types/book";
 
-export const uploadBook = async (data: BookFormData): Promise<boolean> => {
+interface UploadResult {
+  success: boolean;
+  error?: string;
+}
+
+interface SupabaseError {
+  statusCode: string;
+  message: string;
+}
+
+function isSupabaseError(error: any): error is SupabaseError {
+  return (
+    error &&
+    typeof error === "object" &&
+    "statusCode" in error &&
+    "message" in error
+  );
+}
+
+export const uploadBook = async (data: BookFormData): Promise<UploadResult> => {
   try {
     const { data: sessionData, error: sessionError } =
       await supabase.auth.getSession();
     if (sessionError) {
       console.error("Error getting session:", sessionError);
-      return false;
+      return { success: false, error: sessionError.message };
     }
     if (!sessionData) {
       console.error("User not authenticated.");
-      return false;
+      return { success: false, error: "User not authenticated." };
     }
 
     const bucket = "books";
     const storage = supabase.storage.from(bucket);
     if (!storage) {
       console.error("Supabase Storage is not available.");
-      return false;
+      return { success: false, error: "Supabase Storage is not available." };
     }
 
     // Upload Images
     const imageUrls = await Promise.all(
       data.images.map(async (file) => {
-        const { data: uploadData, error: uploadError } = await storage.upload(
-          `public/${file.name}`,
-          file,
-          {
-            cacheControl: "3600",
-            upsert: false,
+        try {
+          const { data: uploadData, error: uploadError } = await storage.upload(
+            `public/${file.name}`,
+            file,
+            {
+              cacheControl: "3600",
+              upsert: false,
+            }
+          );
+          if (uploadError) {
+            if (
+              isSupabaseError(uploadError) &&
+              uploadError.statusCode === "409"
+            ) {
+              throw new Error("Duplicate");
+            }
+            throw uploadError;
           }
-        );
-        if (uploadError) {
-          throw uploadError;
+          console.log("Data uploaded successfully!", uploadData);
+          return uploadData?.path;
+        } catch (error) {
+          if (isSupabaseError(error) && error.statusCode === "409") {
+            throw new Error("Duplicate");
+          }
+          throw error;
         }
-        console.log("Data uploaded successfully!", uploadData);
-        return uploadData?.path;
       })
     );
 
@@ -58,9 +90,15 @@ export const uploadBook = async (data: BookFormData): Promise<boolean> => {
       throw insertError;
     }
 
-    return true;
+    return { success: true };
   } catch (error) {
+    if ((error as Error).message === "Duplicate") {
+      return { success: false, error: "Duplicate image file." };
+    }
     console.error("Error uploading books", error);
-    return false;
+    return {
+      success: false,
+      error: "An error occurred while uploading the book.",
+    };
   }
 };
