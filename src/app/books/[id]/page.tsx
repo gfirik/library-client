@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { BookFormData } from "@/types/book";
 import { supabase } from "@/utils/supabase/client";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 interface BookDetailsPageProps {
   params: { id: string };
@@ -42,8 +45,23 @@ const BookDetailsPage: FC<BookDetailsPageProps> = async ({ params }) => {
   const { title, author, status, categories, description, images } = book;
 
   return (
-    <div className="bg-gradient-to-b from-gray-100 to-white py-10">
+    <div className="bg-gradient-to-b from-gray-100 to-white py-10 px-4">
       <div className="flex flex-col items-center">
+        <div className="w-full max-w-2xl mb-8">
+          <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-md">
+            <Link href="/">
+              <Button
+                variant="outline"
+                size="icon"
+                className="flex items-center space-x-2"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+            </Link>
+            <span className="text-lg font-semibold">{title}</span>
+            <div className="w-6"></div> {/* Placeholder for future content */}
+          </div>
+        </div>
         <div className="w-64 h-96 relative mb-8 shadow-lg rounded-lg overflow-hidden">
           {images && images.length > 0 && (
             <Image
