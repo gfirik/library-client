@@ -3,10 +3,10 @@
 import useBooks from "@/hooks/useBook";
 import { BookFormData, categories } from "@/types/book";
 import UserGreeting from "@/components/main/usergreeting";
-import CategoryButtons from "@/components/main/categorybuttons";
-import AvailabilityToggle from "@/components/main/availabilitytogle";
-import BookList from "@/components/main/booklist";
 import RecommendedBooks from "@/components/main/recommendedbooks";
+import AvailabilityToggle from "@/components/main/availabilitytogle";
+import CategoryButtons from "@/components/main/categorybuttons";
+import BookList from "@/components/main/booklist";
 
 interface HomeClientProps {
   initialBooks: BookFormData[];
