@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import useBooks from "@/hooks/useBook";
 import { BookFormData, categories } from "@/types/book";
 import UserGreeting from "@/components/main/usergreeting";
@@ -29,7 +28,7 @@ const HomeClient: React.FC<HomeClientProps> = ({ initialBooks }) => {
   if (!books) return <div>Loading...</div>;
 
   return (
-    <>
+    <div className="w-full max-w-2xl mb-8">
       <UserGreeting />
 
       {randomBooks.length > 0 && <RecommendedBooks books={randomBooks} />}
@@ -46,7 +45,7 @@ const HomeClient: React.FC<HomeClientProps> = ({ initialBooks }) => {
       />
 
       <BookList books={filteredBooks} />
-    </>
+    </div>
   );
 };
 

@@ -1,4 +1,3 @@
-import React from "react";
 import BookCard from "@/components/main/bookcard";
 import { BookFormData } from "@/types/book";
 
