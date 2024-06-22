@@ -22,7 +22,7 @@ const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
   if (isRecommended) {
     return (
       <Link href={`/books/${id}`} prefetch={false}>
-        <Card className="flex flex-col items-center p-4 shadow-sm w-full min-w-[200px] mb-3">
+        <Card className="flex flex-col items-center p-4 shadow-sm w-full min-w-[200px] h-[370px] mb-3">
           <CardHeader className="w-full flex justify-center mb-4">
             {images && images.length > 0 && (
               <div className="relative w-32 h-48">
@@ -64,12 +64,12 @@ const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
           </div>
         )}
         <CardContent className="w-full">
-          <CardTitle className="text-lg">{title}</CardTitle>
-          <CardDescription className="text-sm text-gray-600">
+          <CardTitle className="text-base">{title}</CardTitle>
+          <CardDescription className="text-sm text-gray-600 mb-2">
             {author}
           </CardDescription>
           <p
-            className={`text-sm ${
+            className={`text-sm mb-2 ${
               status === "Available" ? "text-green-600" : "text-red-600"
             }`}
           >

@@ -24,10 +24,10 @@ const UserGreeting: React.FC = () => {
   const { isTelegramWebApp, username } = useTelegram();
 
   return (
-    <div className="text-lg mb-4">
+    <div className="text-xl w-full max-w-2xl mb-8">
       {isTelegramWebApp ? (
         username ? (
-          <span className="text-center block">Hello, {username}!</span>
+          <span className="font-bold">Salom, {username}!</span>
         ) : (
           <ForNonTelegramUsers />
         )
