@@ -15,7 +15,7 @@ const BookDetailsPage: FC<BookDetailsPageProps> = async ({ params }) => {
     notFound();
   }
 
-  return <BookDetailsClient book={book} />;
+  return <BookDetailsClient initialBook={book} id={id} />;
 };
 
 export default BookDetailsPage;

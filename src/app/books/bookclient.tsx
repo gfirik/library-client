@@ -1,40 +1,58 @@
 "use client";
 
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import useSWR from "swr";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { useTelegram } from "@/context/telegram";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { BookFormData } from "@/types/book";
+import { fetchBookById } from "@/utils/book/fetchbookbyid";
 
 interface BookDetailsClientProps {
-  book: BookFormData;
+  initialBook: BookFormData;
+  id: string;
 }
 
-const BookDetailsClient: FC<BookDetailsClientProps> = ({ book }) => {
-  const { title, author, status, categories, description, images, id } = book;
-  const { isTelegramWebApp } = useTelegram();
+const fetcher = (id: string) => fetchBookById(id);
+
+const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
+  const { data: book } = useSWR(id, fetcher, { fallbackData: initialBook });
+  const { title, author, status, categories, description, images } = book || {};
+  const { username } = useTelegram();
+  const router = useRouter();
+
+  const handleOrder = useCallback(
+    () => router.push(`/order/${id}`),
+    [router, id]
+  );
 
   useEffect(() => {
-    if (isTelegramWebApp) {
+    if (username) {
       const tg = (window as any).Telegram.WebApp;
       const mainButton = tg.MainButton;
 
       mainButton.text = "Order";
       mainButton.color = "#040303";
+      if (status !== "Available") {
+        mainButton.color = "#333333";
+        mainButton.disable();
+      } else {
+        mainButton.enable();
+      }
       mainButton.show();
-      mainButton.onClick(() => {
-        tg.WebApp.openLink(`/order/${id}`);
-      });
-
+      mainButton.onClick(handleOrder);
       return () => {
         mainButton.offClick();
         mainButton.hide();
       };
     }
-  }, [isTelegramWebApp, id]);
+  }, [username, id, status, handleOrder]);
+
+  if (!book) return <div>Loading...</div>;
 
   return (
     <div className="bg-gradient-to-b from-gray-100 to-white p-4">
@@ -59,7 +77,7 @@ const BookDetailsClient: FC<BookDetailsClientProps> = ({ book }) => {
             {images && images.length > 0 && (
               <Image
                 src={images[0]}
-                alt={title}
+                alt={title ? title : "Book Image"}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
@@ -78,17 +96,31 @@ const BookDetailsClient: FC<BookDetailsClientProps> = ({ book }) => {
               {status}
             </p>
             <div className="text-sm text-gray-600 mb-3">
-              {categories.map((c) => (
-                <Badge key={c} className="mr-1 mb-1" variant="outline">
-                  {c}
-                </Badge>
-              ))}
+              {categories &&
+                categories.map((c) => (
+                  <Badge key={c} className="mr-1 mb-1" variant="outline">
+                    {c}
+                  </Badge>
+                ))}
             </div>
             <div className="text-sm text-gray-800">
               <h2 className="text-lg font-semibold mb-2">Batafsil:</h2>
               <p>{description}</p>
             </div>
           </div>
+          {!username && (
+            <div className="fixed bottom-4 left-4 right-4 z-10">
+              {status === "Available" ? (
+                <Link href={`/order/${id}`}>
+                  <Button className="w-full">Order</Button>
+                </Link>
+              ) : (
+                <Button className="w-full" disabled>
+                  Order
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
