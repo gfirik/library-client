@@ -21,7 +21,15 @@ const fetcher = (id: string) => fetchBookById(id);
 
 const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
   const { data: book } = useSWR(id, fetcher, { fallbackData: initialBook });
-  const { title, author, status, categories, description, images } = book || {};
+  const {
+    title,
+    author,
+    status,
+    categories,
+    description,
+    images,
+    price_per_week,
+  } = book || {};
   const { username } = useTelegram();
   const router = useRouter();
 
@@ -103,13 +111,16 @@ const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
                   </Badge>
                 ))}
             </div>
+            <p className="text-sm font-semibold mb-3 text-gray-500">
+              Price per week: {price_per_week} KRW
+            </p>
             <div className="text-sm text-gray-800">
               <h2 className="text-lg font-semibold mb-2">Batafsil:</h2>
               <p>{description}</p>
             </div>
           </div>
           {!username && (
-            <div className="fixed bottom-4 left-4 right-4 z-10">
+            <div className="w-full max-w-2xl fixed bottom-4 z-10">
               {status === "Available" ? (
                 <Link href={`/order/${id}`}>
                   <Button className="w-full">Order</Button>

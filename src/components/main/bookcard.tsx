@@ -17,7 +17,8 @@ interface BookCardProps {
 }
 
 const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
-  const { title, author, status, images, categories, id } = book;
+  const { title, author, status, images, categories, id, price_per_week } =
+    book;
 
   if (isRecommended) {
     return (
@@ -38,7 +39,7 @@ const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
             )}
           </CardHeader>
           <CardContent className="w-full text-center">
-            <CardTitle className="text-base">{title}</CardTitle>
+            <CardTitle className="text-xl">{title}</CardTitle>
             <CardDescription className="text-sm text-gray-600">
               {author}
             </CardDescription>
@@ -63,8 +64,8 @@ const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
             />
           </div>
         )}
-        <CardContent className="w-full">
-          <CardTitle className="text-base">{title}</CardTitle>
+        <CardContent className="w-full ">
+          <CardTitle className="text-xl">{title}</CardTitle>
           <CardDescription className="text-sm text-gray-600 mb-2">
             {author}
           </CardDescription>
@@ -76,7 +77,7 @@ const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
             {status}
           </p>
           {categories && (
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 mb-2">
               {categories.map((c) => (
                 <Badge key={c} className="mr-1 mb-1" variant="outline">
                   {c}
@@ -84,6 +85,9 @@ const BookCard: FC<BookCardProps> = ({ book, isRecommended = false }) => {
               ))}
             </div>
           )}
+          <p className="text-sm text-gray-600">
+            7 kunlik ijara: {price_per_week} KRW
+          </p>
         </CardContent>
       </Card>
     </Link>

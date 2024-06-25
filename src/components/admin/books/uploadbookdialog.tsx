@@ -41,6 +41,7 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
       rented_by: "",
       images: [],
       categories: [],
+      price_per_week: 0,
     },
   });
   const { toast } = useToast();
@@ -157,9 +158,33 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
               options={[
                 { value: "Available", label: "Available" },
                 { value: "Rented", label: "Rented" },
+                { value: "Pending", label: "Pending" },
               ]}
             />
             <CustomFormField name="rented_by" label="Rented By" />
+
+            <FormField
+              control={form.control}
+              name="price_per_week"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Price per Week</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      value={field.value}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  {form.formState.errors.price_per_week && (
+                    <FormMessage>
+                      {form.formState.errors.price_per_week.message}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}

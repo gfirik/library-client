@@ -21,8 +21,6 @@ const deleteBookImages = async (images: any[]) => {
     return typeof image === "string" ? image : image.path;
   });
 
-  console.log(imagePaths);
-
   const { data, error } = await supabase.storage
     .from("books")
     .remove(imagePaths);
@@ -68,9 +66,10 @@ const BooksPage = () => {
       console.log(`Deleting book with ID: ${bookId}`);
       await deleteBook(bookId, images);
       console.log(`Book with ID: ${bookId} deleted`);
-      // toast({
-
-      // })
+      toast({
+        title: "Book Deleted",
+        description: `Book with ID: ${bookId} has been deleted successfully`,
+      });
       mutate();
     } catch (error) {
       console.error("Error deleting book:", error);

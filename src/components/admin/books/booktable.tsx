@@ -82,6 +82,7 @@ const BookTable = ({ books, onDelete }: BookTableProps) => {
             <TableCell>Categories</TableCell>
             <TableCell>Rented by</TableCell>
             <TableCell>Images</TableCell>
+            <TableCell>Price per Week</TableCell>
             <TableCell>Action</TableCell>
           </TableRow>
         </TableHeader>
@@ -89,7 +90,7 @@ const BookTable = ({ books, onDelete }: BookTableProps) => {
         {books.length === 0 && (
           <TableBody>
             <TableRow>
-              <TableCell colSpan={8}>No books found</TableCell>
+              <TableCell colSpan={10}>No books found</TableCell>
             </TableRow>
           </TableBody>
         )}
@@ -130,6 +131,7 @@ const BookTable = ({ books, onDelete }: BookTableProps) => {
               </TableCell>
               <TableCell>{book.rented_by}</TableCell>
               <TableCell>{book.images.length}</TableCell>
+              <TableCell>{book.price_per_week}</TableCell>
               <TableCell>
                 <Button
                   variant="outline"
