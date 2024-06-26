@@ -20,13 +20,15 @@ import {
 } from "@/components/ui/select";
 import { BookFormData } from "@/types/book";
 import { Badge } from "@/components/ui/badge";
+import UploadBookDialog from "./uploadbookdialog";
 
 interface BookTableProps {
   books: BookFormData[];
   onDelete: (bookId: number, images: any[]) => void;
+  mutate: () => void;
 }
 
-const BookTable = ({ books, onDelete }: BookTableProps) => {
+const BookTable = ({ books, onDelete, mutate }: BookTableProps) => {
   const [statuses, setStatuses] = useState(
     books.map((book) => ({ id: book.id, status: book.status }))
   );
@@ -65,7 +67,6 @@ const BookTable = ({ books, onDelete }: BookTableProps) => {
   };
 
   const handleDeleteClick = (bookId: number, images: any[]) => {
-    console.log(`handleDeleteClick called for book ID: ${bookId}`);
     onDelete(bookId, images);
   };
 
@@ -78,12 +79,12 @@ const BookTable = ({ books, onDelete }: BookTableProps) => {
             <TableCell>Title</TableCell>
             <TableCell>Author</TableCell>
             <TableCell>Published</TableCell>
-            <TableCell>Status</TableCell>
             <TableCell>Categories</TableCell>
+            <TableCell>Status</TableCell>
             <TableCell>Rented by</TableCell>
             <TableCell>Images</TableCell>
             <TableCell>Price per Week</TableCell>
-            <TableCell>Action</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHeader>
 
@@ -142,6 +143,7 @@ const BookTable = ({ books, onDelete }: BookTableProps) => {
                 >
                   Delete
                 </Button>
+                <UploadBookDialog bookToEdit={book} mutate={mutate} />
               </TableCell>
             </TableRow>
           ))}

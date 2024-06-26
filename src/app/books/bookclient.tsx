@@ -120,7 +120,7 @@ const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
             </div>
           </div>
           {!username && (
-            <div className="w-full max-w-2xl fixed bottom-4 z-10">
+            <div className="w-full max-w-2xl ">
               {status === "Available" ? (
                 <Link href={`/order/${id}`}>
                   <Button className="w-full">Order</Button>

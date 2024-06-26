@@ -87,7 +87,9 @@ const BooksPage = () => {
         </h5>
         <UploadBookDialog mutate={mutate} />
       </div>
-      {books && <BookTable books={books} onDelete={handleDeleteBook} />}
+      {books && (
+        <BookTable books={books} onDelete={handleDeleteBook} mutate={mutate} />
+      )}
     </div>
   );
 };

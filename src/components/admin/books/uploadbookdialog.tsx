@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BookFormData, bookSchema, categories } from "@/types/book";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
   DialogFooter,
@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,14 +24,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import CustomFormField from "@/components/reusables/customformfield";
-import { useToast } from "@/components/ui/use-toast";
-import { uploadBook } from "@/utils/book/uploadbook";
-import { capitalizeFirstLetter } from "../../../utils/functions/capitalize";
 
-const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
-  const [open, setOpen] = useState(false);
-  const form = useForm<BookFormData>({
+import CustomFormField from "@/components/reusables/customformfield";
+import Description from "@/components/reusables/description";
+
+import { uploadBook } from "@/utils/book/uploadbook";
+import { updateBook } from "@/utils/book/updatebook";
+import { capitalizeFirstLetter } from "@/utils/functions/capitalize";
+import { BookFormData, bookSchema, categories } from "@/types/book";
+
+interface UploadBookDialogProps {
+  mutate: () => void;
+  bookToEdit?: BookFormData;
+}
+
+const UploadBookDialog = ({ mutate, bookToEdit }: UploadBookDialogProps) => {
+  const formMethods = useForm<BookFormData>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
       title: "",
@@ -46,16 +55,29 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
   });
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (bookToEdit) {
+      formMethods.reset(bookToEdit);
+    }
+  }, [bookToEdit, formMethods]);
+
   const onSubmit = async (data: BookFormData) => {
     try {
-      const { success, error } = await uploadBook(data);
+      let result;
+      if (bookToEdit) {
+        result = await updateBook(bookToEdit.id!, data);
+      } else {
+        result = await uploadBook(data);
+      }
+      const { success, error } = result;
       if (success) {
-        setOpen(false);
-        form.reset();
+        formMethods.reset();
         mutate();
         toast({
-          title: "New book uploaded!",
-          description: `${data.title} by ${data.author} has been added.`,
+          title: bookToEdit ? "Book updated!" : "New book uploaded!",
+          description: `${data.title} by ${data.author} has been ${
+            bookToEdit ? "updated" : "added"
+          }.`,
         });
       } else {
         let errorMessage =
@@ -71,7 +93,6 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
         });
       }
     } catch (error) {
-      console.error("Error uploading book", error);
       toast({
         variant: "destructive",
         title: "Error uploading book",
@@ -81,16 +102,31 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>
-        <Button>New Book</Button>
+        <Button variant={bookToEdit ? "outline" : "default"}>
+          {bookToEdit ? "Edit" : "New Book"}
+        </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-screen overflow-y-auto">
+      <DialogContent
+        className="max-h-screen overflow-y-auto"
+        aria-describedby="dialog-description"
+      >
         <DialogHeader>
-          <DialogTitle>Upload New Book</DialogTitle>
+          <DialogTitle>
+            {bookToEdit ? "Edit Book" : "Upload New Book"}
+          </DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Form {...formMethods}>
+          <form
+            onSubmit={formMethods.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <FormDescription id="dialog-description">
+              {bookToEdit
+                ? "Update the details of the book."
+                : "Fill in the details to upload a new book."}
+            </FormDescription>
             <CustomFormField name="title" label="Title" />
             <CustomFormField name="author" label="Author" />
             <CustomFormField
@@ -101,7 +137,7 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
             <CustomFormField name="published" label="Published Year" />
 
             <FormField
-              control={form.control}
+              control={formMethods.control}
               name="categories"
               render={() => (
                 <FormItem>
@@ -111,7 +147,7 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
                       {categories.map((category) => (
                         <FormField
                           key={category}
-                          control={form.control}
+                          control={formMethods.control}
                           name="categories"
                           render={({ field }) => {
                             return (
@@ -164,7 +200,7 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
             <CustomFormField name="rented_by" label="Rented By" />
 
             <FormField
-              control={form.control}
+              control={formMethods.control}
               name="price_per_week"
               render={({ field }) => (
                 <FormItem>
@@ -177,9 +213,9 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
-                  {form.formState.errors.price_per_week && (
+                  {formMethods.formState.errors.price_per_week && (
                     <FormMessage>
-                      {form.formState.errors.price_per_week.message}
+                      {formMethods.formState.errors.price_per_week.message}
                     </FormMessage>
                   )}
                 </FormItem>
@@ -187,7 +223,7 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
             />
 
             <FormField
-              control={form.control}
+              control={formMethods.control}
               name="images"
               render={({ field }) => (
                 <FormItem>
@@ -205,17 +241,16 @@ const UploadBookDialog = ({ mutate }: { mutate: () => void }) => {
                       }}
                     />
                   </FormControl>
-                  {form.formState.errors.images && (
+                  {formMethods.formState.errors.images && (
                     <FormMessage>
-                      {form.formState.errors.images.message}
+                      {formMethods.formState.errors.images.message}
                     </FormMessage>
                   )}
                 </FormItem>
               )}
             />
-
             <DialogFooter>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">{bookToEdit ? "Update" : "Submit"}</Button>
             </DialogFooter>
           </form>
         </Form>
