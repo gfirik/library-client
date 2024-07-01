@@ -1,13 +1,21 @@
 import { FC } from "react";
+import { notFound } from "next/navigation";
+import { fetchBookByIdForOrder } from "@/utils/book/fetchBookByIdForOrder";
+import OrderDetailsClient from "../orderclient";
 
-interface OrderPageProps {
-  params: {
-    id: string;
-  };
+interface OrderDetailsPageProps {
+  params: { id: string };
 }
 
-const OrderPage: FC<OrderPageProps> = ({ params }) => {
+const OrderDetailsPage: FC<OrderDetailsPageProps> = async ({ params }) => {
   const { id } = params;
-  return <div>hello</div>;
+  const book = await fetchBookByIdForOrder(id);
+
+  if (!book) {
+    notFound();
+  }
+
+  return <OrderDetailsClient book={book} />;
 };
-export default OrderPage;
+
+export default OrderDetailsPage;
