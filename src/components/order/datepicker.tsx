@@ -1,10 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { format, addDays } from "date-fns";
+import { addDays, format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { CalendarIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -13,42 +11,47 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useState } from "react";
 
 interface DatePickerWithRangeProps
   extends React.HTMLAttributes<HTMLDivElement> {
   onDateChange: (range: DateRange | undefined) => void;
 }
 
-const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({
+export function DatePickerWithRange({
   className,
   onDateChange,
-}) => {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: addDays(new Date(), 1),
-    to: addDays(new Date(), 7),
-  });
+}: DatePickerWithRangeProps) {
+  const [date, setDate] = useState<DateRange | undefined>();
 
-  const handleDateChange = (range: DateRange | undefined) => {
-    if (range?.from && range?.to) {
-      const days = Math.ceil(
-        (range.to.getTime() - range.from.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (days >= 7) {
-        setDate(range);
-        onDateChange(range);
+  const handleSelect = (selectedDate: DateRange | undefined) => {
+    if (selectedDate?.from) {
+      const from = selectedDate.from;
+      let to = selectedDate.to;
+
+      // Ensure the end date is at least 7 days after the start date
+      if (!to || to < addDays(from, 7)) {
+        to = addDays(from, 7);
       }
+
+      const newRange = { from, to };
+      setDate(newRange);
+      onDateChange(newRange);
+    } else {
+      setDate(undefined);
+      onDateChange(undefined);
     }
   };
 
   return (
-    <div className={cn("grid gap-2", className)}>
+    <div>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             id="date"
-            variant={"outline"}
+            variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal",
+              "w-full max-w-2xl justify-start text-left font-normal",
               !date && "text-muted-foreground"
             )}
           >
@@ -63,7 +66,7 @@ const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({
                 format(date.from, "LLL dd, y")
               )
             ) : (
-              <span>Pick a date</span>
+              <span>Muddatni belgilash</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -71,16 +74,16 @@ const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from}
+            defaultMonth={date?.from || new Date()}
             selected={date}
-            onSelect={handleDateChange}
+            onSelect={handleSelect}
             numberOfMonths={2}
-            disabled={(date) => date < addDays(new Date(), 1)}
+            disabled={(day) => day < addDays(new Date(), 1)}
+            fromDate={addDays(new Date(), 1)}
+            toDate={addDays(new Date(), 60)} // Allow selection up to 60 days
           />
         </PopoverContent>
       </Popover>
     </div>
   );
-};
-
-export default DatePickerWithRange;
+}

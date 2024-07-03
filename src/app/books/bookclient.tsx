@@ -21,6 +21,7 @@ const fetcher = (id: string) => fetchBookById(id);
 
 const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
   const { data: book } = useSWR(id, fetcher, { fallbackData: initialBook });
+  const { username } = useTelegram();
   const {
     title,
     author,
@@ -30,7 +31,6 @@ const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
     images,
     price_per_week,
   } = book || {};
-  const { username } = useTelegram();
   const router = useRouter();
 
   const handleOrder = useCallback(
@@ -120,14 +120,14 @@ const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
             </div>
           </div>
           {!username && (
-            <div className="w-full max-w-2xl ">
+            <div className="w-full max-w-2xl">
               {status === "Available" ? (
                 <Link href={`/order/${id}`}>
                   <Button className="w-full">Order</Button>
                 </Link>
               ) : (
                 <Button className="w-full" disabled>
-                  Order
+                  Buyurtma berish
                 </Button>
               )}
             </div>
