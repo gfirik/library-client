@@ -1,21 +1,22 @@
 import { z } from "zod";
-import { addDays } from "date-fns";
 
-export const orderFormSchema = z.object({
-  startDate: z
-    .date({
-      required_error: "Start date is required.",
-    })
-    .refine((date) => date > new Date(), {
-      message: "Start date should be at least tomorrow.",
-    }),
-  endDate: z
-    .date({
-      required_error: "End date is required.",
-    })
-    .refine((date) => date > addDays(new Date(), 1), {
-      message: "End date should be at least one day after start date.",
-    }),
+export const orderSchema = z.object({
+  user_id: z.string().uuid(),
+  book_id: z.string().uuid(),
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  total_price: z.number().positive(),
+  status: z.enum([
+    "pending_payment",
+    "payment_submitted",
+    "confirmed",
+    "rejected",
+    "rented",
+    "returned",
+  ]),
+  payment_screenshot: z.string().url().optional(),
 });
 
-export type OrderFormData = z.infer<typeof orderFormSchema>;
+export type OrderFormData = z.infer<typeof orderSchema>;
+
+export type OrderStatus = z.infer<typeof orderSchema.shape.status>;

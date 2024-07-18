@@ -5,6 +5,7 @@ import React, { createContext, useEffect, useState, useContext } from "react";
 interface TelegramContextProps {
   isTelegramWebApp: boolean;
   username: string;
+  telegramUserId: number | null;
 }
 
 const TelegramContext = createContext<TelegramContextProps | undefined>(
@@ -16,6 +17,7 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
   const [username, setUsername] = useState("");
+  const [telegramUserId, setTelegramUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const initializeTelegram = () => {
@@ -23,7 +25,8 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
       if (tg) {
         setIsTelegramWebApp(true);
         tg.ready();
-        setUsername(tg.initDataUnsafe.user?.username);
+        setUsername(tg.initDataUnsafe.user?.username ?? "");
+        setTelegramUserId(tg.initDataUnsafe.user?.id ?? null);
       }
     };
 
@@ -39,7 +42,9 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <TelegramContext.Provider value={{ isTelegramWebApp, username }}>
+    <TelegramContext.Provider
+      value={{ isTelegramWebApp, username, telegramUserId }}
+    >
       {children}
     </TelegramContext.Provider>
   );

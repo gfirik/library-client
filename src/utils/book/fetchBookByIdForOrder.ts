@@ -21,7 +21,7 @@ export const fetchBookByIdForOrder = async (
 
   if (book) {
     return {
-      id: book.id.toString(),
+      id: book.id,
       title: book.title,
       author: book.author,
       price_per_week: book.price_per_week,

@@ -19,7 +19,6 @@ interface DatePickerWithRangeProps
 }
 
 export function DatePickerWithRange({
-  className,
   onDateChange,
 }: DatePickerWithRangeProps) {
   const [date, setDate] = useState<DateRange | undefined>();
