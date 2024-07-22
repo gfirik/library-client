@@ -21,7 +21,7 @@ const fetcher = (id: string) => fetchBookById(id);
 
 const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
   const { data: book } = useSWR(id, fetcher, { fallbackData: initialBook });
-  const { username } = useTelegram();
+  const { telegramUserId } = useTelegram();
   const {
     title,
     author,
@@ -39,7 +39,7 @@ const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
   );
 
   useEffect(() => {
-    if (username) {
+    if (telegramUserId) {
       const tg = (window as any).Telegram.WebApp;
       const mainButton = tg.MainButton;
 
@@ -58,7 +58,7 @@ const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
         mainButton.hide();
       };
     }
-  }, [username, id, status, handleOrder]);
+  }, [telegramUserId, id, status, handleOrder]);
 
   if (!book) return <div>Loading...</div>;
 
@@ -119,7 +119,7 @@ const BookDetailsClient: FC<BookDetailsClientProps> = ({ initialBook, id }) => {
               <p>{description}</p>
             </div>
           </div>
-          {!username && (
+          {!telegramUserId && (
             <div className="w-full max-w-2xl">
               {status === "Available" ? (
                 <Link href={`/order/${id}`}>

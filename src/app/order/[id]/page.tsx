@@ -15,6 +15,8 @@ const OrderDetailsPage: FC<OrderDetailsPageProps> = async ({ params }) => {
     notFound();
   }
 
+  console.log("Book data in OrderDetailsPage:", book);
+
   return <OrderDetailsClient book={book} />;
 };
 

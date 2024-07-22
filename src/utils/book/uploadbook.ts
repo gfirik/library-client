@@ -61,7 +61,6 @@ export const uploadBook = async (data: BookFormData): Promise<UploadResult> => {
             }
             throw uploadError;
           }
-          console.log("Data uploaded successfully!", uploadData);
           return uploadData?.path;
         } catch (error) {
           if (isSupabaseError(error) && error.statusCode === "409") {
@@ -76,7 +75,7 @@ export const uploadBook = async (data: BookFormData): Promise<UploadResult> => {
     const validImageUrls = imageUrls.filter((url) => url !== null);
 
     // Upload Book Data
-    const { error: insertError } = await supabase.from("books").insert({
+    const bookData = {
       title: data.title,
       author: data.author,
       description: data.description,
@@ -85,10 +84,21 @@ export const uploadBook = async (data: BookFormData): Promise<UploadResult> => {
       status: data.status,
       rented_by: data.rented_by,
       images: validImageUrls,
-    });
+      price_per_week: data.price_per_week,
+    };
+
+    console.log("Data being inserted into the database:", bookData);
+
+    const { data: insertedData, error: insertError } = await supabase
+      .from("books")
+      .insert(bookData)
+      .single();
+
     if (insertError) {
       throw insertError;
     }
+
+    console.log("Inserted data:", insertedData);
 
     return { success: true };
   } catch (error) {

@@ -30,7 +30,7 @@ const deleteBookImages = async (images: any[]) => {
   return data;
 };
 
-const deleteBook = async (bookId: number, images: string[]) => {
+const deleteBook = async (bookId: string, images: string[]) => {
   try {
     const response = await deleteBookImages(images);
     console.log("Delete Images Response:", response);
@@ -61,7 +61,7 @@ const BooksPage = () => {
 
   const { toast } = useToast();
 
-  const handleDeleteBook = async (bookId: number, images: string[]) => {
+  const handleDeleteBook = async (bookId: string, images: string[]) => {
     try {
       console.log(`Deleting book with ID: ${bookId}`);
       await deleteBook(bookId, images);

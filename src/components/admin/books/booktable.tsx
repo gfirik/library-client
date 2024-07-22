@@ -24,22 +24,25 @@ import UploadBookDialog from "./uploadbookdialog";
 
 interface BookTableProps {
   books: BookFormData[];
-  onDelete: (bookId: number, images: any[]) => void;
+  onDelete: (bookId: string, images: any[]) => void;
   mutate: () => void;
 }
 
 const BookTable = ({ books, onDelete, mutate }: BookTableProps) => {
-  const [statuses, setStatuses] = useState(
-    books.map((book) => ({ id: book.id, status: book.status }))
+  const [statuses, setStatuses] = useState<
+    Array<{ id: string; status: BookFormData["status"] }>
+  >(
+    books
+      .filter((book) => book.id !== undefined)
+      .map((book) => ({ id: book.id as string, status: book.status }))
   );
   const { toast } = useToast();
 
-  const handleStatusChange = async (bookId: number, newStatus: string) => {
+  const handleStatusChange = async (
+    bookId: string,
+    newStatus: BookFormData["status"]
+  ) => {
     try {
-      if (!["Available", "Rented", "Pending"].includes(newStatus)) {
-        throw new Error("Invalid status");
-      }
-
       const { data, error } = await supabase
         .from("books")
         .update({ status: newStatus })
@@ -48,12 +51,7 @@ const BookTable = ({ books, onDelete, mutate }: BookTableProps) => {
 
       setStatuses((prevStatuses) =>
         prevStatuses.map((status) =>
-          status.id === bookId
-            ? {
-                ...status,
-                status: newStatus as "Available" | "Rented" | "Pending",
-              }
-            : status
+          status.id === bookId ? { ...status, status: newStatus } : status
         )
       );
 
@@ -66,7 +64,7 @@ const BookTable = ({ books, onDelete, mutate }: BookTableProps) => {
     }
   };
 
-  const handleDeleteClick = (bookId: number, images: any[]) => {
+  const handleDeleteClick = (bookId: string, images: any[]) => {
     onDelete(bookId, images);
   };
 
@@ -117,7 +115,10 @@ const BookTable = ({ books, onDelete, mutate }: BookTableProps) => {
                     "Available"
                   }
                   onValueChange={(value) =>
-                    book.id !== undefined && handleStatusChange(book.id, value)
+                    handleStatusChange(
+                      book.id as string,
+                      value as BookFormData["status"]
+                    )
                   }
                 >
                   <SelectTrigger>

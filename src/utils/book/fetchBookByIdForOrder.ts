@@ -20,11 +20,12 @@ export const fetchBookByIdForOrder = async (
   }
 
   if (book) {
+    console.log("Fetched book data:", book);
     return {
       id: book.id,
       title: book.title,
       author: book.author,
-      price_per_week: book.price_per_week,
+      price_per_week: Number(book.price_per_week),
     };
   }
 

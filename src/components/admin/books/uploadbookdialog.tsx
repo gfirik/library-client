@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -26,7 +26,6 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import CustomFormField from "@/components/reusables/customformfield";
-import Description from "@/components/reusables/description";
 
 import { uploadBook } from "@/utils/book/uploadbook";
 import { updateBook } from "@/utils/book/updatebook";
@@ -62,6 +61,7 @@ const UploadBookDialog = ({ mutate, bookToEdit }: UploadBookDialogProps) => {
   }, [bookToEdit, formMethods]);
 
   const onSubmit = async (data: BookFormData) => {
+    console.log("Form Data Submission started");
     try {
       let result;
       if (bookToEdit) {
@@ -69,6 +69,7 @@ const UploadBookDialog = ({ mutate, bookToEdit }: UploadBookDialogProps) => {
       } else {
         result = await uploadBook(data);
       }
+      console.log("Result from upload/update:", result);
       const { success, error } = result;
       if (success) {
         formMethods.reset();
@@ -199,27 +200,10 @@ const UploadBookDialog = ({ mutate, bookToEdit }: UploadBookDialogProps) => {
             />
             <CustomFormField name="rented_by" label="Rented By" />
 
-            <FormField
-              control={formMethods.control}
+            <CustomFormField
               name="price_per_week"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price per Week</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      value={field.value}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  {formMethods.formState.errors.price_per_week && (
-                    <FormMessage>
-                      {formMethods.formState.errors.price_per_week.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
+              label="Price per Week"
+              type="number"
             />
 
             <FormField

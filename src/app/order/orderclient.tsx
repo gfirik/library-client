@@ -7,8 +7,9 @@ import { DatePickerWithRange } from "@/components/order/datepicker";
 import { useTelegram } from "@/context/telegram";
 import { DateRange } from "react-day-picker";
 import { createOrder, updateBookStatus } from "@/utils/order/createOrder";
-import { OrderStatus } from "@/types/order";
+import { orderSchema, OrderStatus } from "@/types/order";
 import { fetchUserByTelegramId } from "@/utils/order/fetchUserByTelegramId";
+import NoTelegramUserId from "@/components/order/notelegramuserid";
 
 interface OrderDetailsClientProps {
   book: {
@@ -20,7 +21,7 @@ interface OrderDetailsClientProps {
 }
 
 const OrderDetailsClient: React.FC<OrderDetailsClientProps> = ({ book }) => {
-  const { username, telegramUserId } = useTelegram();
+  const { telegramUserId } = useTelegram();
   const { toast } = useToast();
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -33,7 +34,10 @@ const OrderDetailsClient: React.FC<OrderDetailsClientProps> = ({ book }) => {
           (range.to.getTime() - range.from.getTime()) / (1000 * 60 * 60 * 24)
         );
         const weeks = Math.ceil(days / 7);
+        console.log("Days:", days, "Weeks:", weeks);
+        console.log("Price per week:", book.price_per_week);
         const price = weeks * book.price_per_week;
+        console.log("Calculated price:", price);
         setTotalPrice(price);
       } else {
         setTotalPrice(null);
@@ -66,7 +70,13 @@ const OrderDetailsClient: React.FC<OrderDetailsClientProps> = ({ book }) => {
         status: "pending_payment" as OrderStatus,
       };
 
-      await createOrder(orderData);
+      console.log("Order Data:", orderData);
+
+      // Validate order data with Zod
+      const validatedOrderData = orderSchema.parse(orderData);
+      console.log("Validated Order Data:", validatedOrderData);
+
+      await createOrder(validatedOrderData);
       await updateBookStatus(book.id, "Pending");
 
       toast({
@@ -120,31 +130,30 @@ const OrderDetailsClient: React.FC<OrderDetailsClientProps> = ({ book }) => {
         color: "#040303",
       });
 
+      mainButton.show();
+
       if (!dateRange || !totalPrice) {
-        mainButton.hide();
+        mainButton.disable();
       } else {
-        mainButton.show();
+        mainButton.enable();
       }
 
       mainButton.onClick(handleOrder);
 
       return () => {
         mainButton.offClick(handleOrder);
+        mainButton.hide();
       };
     }
   }, [telegramUserId, handleOrder, dateRange, totalPrice]);
 
   if (!telegramUserId) {
-    return (
-      <div className="p-4">
-        <p>Please open this page via the Telegram app to place an order.</p>
-      </div>
-    );
+    return <NoTelegramUserId />;
   }
 
   return (
     <div className="bg-gradient-to-b from-gray-100 to-white p-4 min-h-screen flex flex-col">
-      <div className="flex-grow w-full max-w-md mx-auto ">
+      <div className="flex-grow w-full max-w-md mx-auto">
         <h3 className="text-gray-600">Buyurtma tafsilotlari:</h3>
         <h1 className="text-3xl font-bold mt-12">{book.title}</h1>
         <p className="text-lg font-semibold mt-4">{book.author}</p>
@@ -152,10 +161,16 @@ const OrderDetailsClient: React.FC<OrderDetailsClientProps> = ({ book }) => {
           Haftalik ijara narxi: {book.price_per_week} KRW
         </p>
         <DatePickerWithRange className="mt-4" onDateChange={handleDateChange} />
-        {totalPrice !== null && (
+        {totalPrice !== null ? (
           <div>
             <h2 className="text-lg font-semibold mt-8">
               Umumiy to&apos;lov narxi: {totalPrice} KRW
+            </h2>
+          </div>
+        ) : (
+          <div>
+            <h2 className="text-lg font-semibold mt-8">
+              Narxlar tanlangan muddatga ko&apos;ra belgilanadi.
             </h2>
           </div>
         )}
@@ -165,7 +180,7 @@ const OrderDetailsClient: React.FC<OrderDetailsClientProps> = ({ book }) => {
           <Button
             className="w-full"
             onClick={handleOrder}
-            disabled={!dateRange || !totalPrice}
+            disabled={!dateRange || totalPrice === null}
           >
             Tasdiqlash
           </Button>

@@ -44,7 +44,7 @@ async function uploadNewImages(images: (File | string)[]) {
 }
 
 export const updateBook = async (
-  bookId: number,
+  bookId: string,
   data: BookFormData
 ): Promise<UploadResult> => {
   try {
