@@ -33,7 +33,7 @@ const CustomFormField: React.FC<CustomFormFieldProps> = ({
   type = "text",
   options = [],
 }) => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   return (
     <FormField
@@ -44,7 +44,7 @@ const CustomFormField: React.FC<CustomFormFieldProps> = ({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             {type === "select" ? (
-              <Select onValueChange={field.onChange}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger>
                   <SelectValue placeholder={label} />
                 </SelectTrigger>
@@ -57,7 +57,21 @@ const CustomFormField: React.FC<CustomFormFieldProps> = ({
                 </SelectContent>
               </Select>
             ) : (
-              <Input {...field} type={type} />
+              <Input
+                {...field}
+                type={type}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (type === "number") {
+                    setValue(name, value === "" ? null : Number(value), {
+                      shouldValidate: true,
+                    });
+                  } else {
+                    field.onChange(e);
+                  }
+                }}
+                value={field.value?.toString() ?? ""}
+              />
             )}
           </FormControl>
           <FormMessage />
