@@ -27,7 +27,7 @@ const UserGreeting: React.FC = () => {
     <div className="text-xl w-full max-w-2xl mb-8">
       {isTelegramWebApp ? (
         username ? (
-          <span className="font-bold">Salom, {username}!</span>
+          <span className="font-bold">Assalomu alaykum, {username}!</span>
         ) : (
           <ForNonTelegramUsers />
         )
