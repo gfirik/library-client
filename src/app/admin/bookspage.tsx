@@ -5,6 +5,7 @@ import BookTable from "@/components/admin/books/booktable";
 import UploadBookDialog from "@/components/admin/books/uploadbookdialog";
 import { supabase } from "@/utils/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 const fetchBooks = async () => {
   const { data, error } = await supabase.from("books").select("*");
@@ -80,16 +81,25 @@ const BooksPage = () => {
   if (error) return <div>Error loading books</div>;
 
   return (
-    <div className="max-w-6xl mx-auto p-4 bg-white shadow-md rounded-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h5 className="text-xl font-semibold">
-          Books Management of Ilm Library
-        </h5>
-        <UploadBookDialog mutate={mutate} />
-      </div>
-      {books && (
-        <BookTable books={books} onDelete={handleDeleteBook} mutate={mutate} />
-      )}
+    <div className="max-w-7xl mx-auto p-6 bg-background text-foreground">
+      <Card className="mb-6">
+        <CardHeader>
+          <h2 className="text-2xl font-semibold">Books Management</h2>
+          <p className="text-muted">Manage all books in the Ilm Library</p>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-between items-center mb-4">
+            <UploadBookDialog mutate={mutate} />
+          </div>
+          {books && (
+            <BookTable
+              books={books}
+              onDelete={handleDeleteBook}
+              mutate={mutate}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

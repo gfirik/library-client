@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 const Sidebar = ({
   email,
   onTabSelect,
+  selectedTab,
 }: {
   email: string;
   onTabSelect: (tab: string) => void;
+  selectedTab: string; // Added to track the active tab
 }) => {
   const router = useRouter();
 
@@ -19,7 +21,7 @@ const Sidebar = ({
   };
 
   return (
-    <div className="w-64 bg-zinc-950 text-white flex flex-col justify-between">
+    <div className="w-64 bg-zinc-950 text-white flex flex-col justify-between sticky top-0 h-screen">
       <div>
         <div className="p-4 text-lg font-bold">Admin Dashboard</div>
         <nav className="p-4">
@@ -27,7 +29,11 @@ const Sidebar = ({
             <li className="mb-2">
               <button
                 onClick={() => onTabSelect("main")}
-                className="w-full text-left py-2 px-4 rounded hover:bg-gray-700"
+                className={`w-full text-left py-2 px-4 rounded ${
+                  selectedTab === "main"
+                    ? "bg-gray-700 text-white"
+                    : "hover:bg-gray-700"
+                }`}
               >
                 Main
               </button>
@@ -35,7 +41,11 @@ const Sidebar = ({
             <li className="mb-2">
               <button
                 onClick={() => onTabSelect("users")}
-                className="w-full text-left py-2 px-4 rounded hover:bg-gray-700"
+                className={`w-full text-left py-2 px-4 rounded ${
+                  selectedTab === "users"
+                    ? "bg-gray-700 text-white"
+                    : "hover:bg-gray-700"
+                }`}
               >
                 Users
               </button>
@@ -43,7 +53,11 @@ const Sidebar = ({
             <li className="mb-2">
               <button
                 onClick={() => onTabSelect("books")}
-                className="w-full text-left py-2 px-4 rounded hover:bg-gray-700"
+                className={`w-full text-left py-2 px-4 rounded ${
+                  selectedTab === "books"
+                    ? "bg-gray-700 text-white"
+                    : "hover:bg-gray-700"
+                }`}
               >
                 Books
               </button>

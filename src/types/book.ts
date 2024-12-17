@@ -13,9 +13,6 @@ export const bookSchema = z.object({
     .array(z.any())
     .max(4, "Maximum 4 images are allowed")
     .min(1, "At least one image is required"),
-  // price_per_week: z
-  //   .number()
-  //   .min(0, "Price per week is required and must be a positive number"),
   price_per_week: z
     .number()
     .nonnegative({ message: "Price per week must be a non-negative number" }),

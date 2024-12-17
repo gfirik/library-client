@@ -23,8 +23,12 @@ const AdminClientPage = ({ email }: { email: string }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar email={email} onTabSelect={setSelectedTab} />
+    <div className="flex bg-gray-100 min-h-screen">
+      <Sidebar
+        email={email}
+        onTabSelect={setSelectedTab}
+        selectedTab={selectedTab} // Pass the selected tab
+      />
       <div className="flex-1 p-6">{renderContent()}</div>
     </div>
   );
