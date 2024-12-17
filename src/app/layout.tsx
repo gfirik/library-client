@@ -8,7 +8,7 @@ import ScriptsBlock from "@/components/telegram/script";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Noor Library",
+  title: "Ilm Library",
   description: "Ilm istaganlar uchun",
 };
 
