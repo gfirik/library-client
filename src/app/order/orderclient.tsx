@@ -34,10 +34,7 @@ const OrderDetailsClient: React.FC<OrderDetailsClientProps> = ({ book }) => {
           (range.to.getTime() - range.from.getTime()) / (1000 * 60 * 60 * 24)
         );
         const weeks = Math.ceil(days / 7);
-        console.log("Days:", days, "Weeks:", weeks);
-        console.log("Price per week:", book.price_per_week);
         const price = weeks * book.price_per_week;
-        console.log("Calculated price:", price);
         setTotalPrice(price);
       } else {
         setTotalPrice(null);
@@ -70,11 +67,7 @@ const OrderDetailsClient: React.FC<OrderDetailsClientProps> = ({ book }) => {
         status: "pending_payment" as OrderStatus,
       };
 
-      console.log("Order Data:", orderData);
-
-      // Validate order data with Zod
       const validatedOrderData = orderSchema.parse(orderData);
-      console.log("Validated Order Data:", validatedOrderData);
 
       await createOrder(validatedOrderData);
       await updateBookStatus(book.id, "Pending");
@@ -152,31 +145,44 @@ const OrderDetailsClient: React.FC<OrderDetailsClientProps> = ({ book }) => {
   }
 
   return (
-    <div className="bg-gradient-to-b from-gray-100 to-white p-4 min-h-screen flex flex-col">
-      <div className="flex-grow w-full max-w-md mx-auto">
-        <h3 className="text-gray-600">Buyurtma tafsilotlari:</h3>
-        <h1 className="text-3xl font-bold mt-12">{book.title}</h1>
-        <p className="text-lg font-semibold mt-4">{book.author}</p>
-        <p className="text-sm mb-3 text-gray-600 mt-4">
-          Haftalik ijara narxi: {book.price_per_week} KRW
-        </p>
-        <DatePickerWithRange className="mt-4" onDateChange={handleDateChange} />
-        {totalPrice !== null ? (
-          <div>
-            <h2 className="text-lg font-semibold mt-8">
-              Umumiy to&apos;lov narxi: {totalPrice} KRW
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
+      <div className="flex-grow max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
+        {/* Book Title */}
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-2">{book.title}</h1>
+          <p className="text-gray-700 text-lg">{book.author}</p>
+          <p className="text-sm text-gray-500 mt-2">
+            Haftalik ijara narxi:{" "}
+            <span className="font-semibold">{book.price_per_week} KRW</span>
+          </p>
+        </div>
+
+        {/* Date Picker */}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2 text-gray-600">
+            Ijara muddatini tanlang
+          </h3>
+          <DatePickerWithRange onDateChange={handleDateChange} />
+        </div>
+
+        {/* Total Price */}
+        <div className="mt-8 text-center">
+          {totalPrice !== null ? (
+            <h2 className="text-xl font-semibold">
+              Umumiy to&apos;lov:{" "}
+              <span className="text-green-600">{totalPrice} KRW</span>
             </h2>
-          </div>
-        ) : (
-          <div>
-            <h2 className="text-lg font-semibold mt-8">
+          ) : (
+            <h2 className="text-lg text-gray-500">
               Narxlar tanlangan muddatga ko&apos;ra belgilanadi.
             </h2>
-          </div>
-        )}
+          )}
+        </div>
       </div>
+
+      {/* Fallback Button */}
       {!telegramUserId && (
-        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t">
+        <div className="sticky bottom-0 bg-white p-4 border-t">
           <Button
             className="w-full"
             onClick={handleOrder}
